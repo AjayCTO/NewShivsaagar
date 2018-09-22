@@ -1,5 +1,5 @@
 ﻿'use strict';
-app.controller('ProductDetailController', ['$scope','$rootScope', '$location', 'authService', function ($scope,$rootScope, $location, authService) {
+app.controller('ProductDetailController', ['$scope','$rootScope','localStorageService', '$location', 'authService', function ($scope,$rootScope,localStorageService, $location, authService) {
 
     $scope.product = [];
     $scope.Images = [];
@@ -33,8 +33,13 @@ app.controller('ProductDetailController', ['$scope','$rootScope', '$location', '
 
     }
 
-    $scope.AddToCartGlobal = function (productID, product, ID) {
+    $scope.AddToCartGlobal = function (productID, product, ID) {        
         $rootScope.$emit("AddToCart", productID, product, ID);
+    }
+
+
+    $scope.addTowishList = function (productID) {
+        $rootScope.$emit("addTowishList", productID);
     }
 
     //$scope.AddTowishlistGlobal = function (productId, customerId) {
@@ -192,6 +197,35 @@ app.controller('ProductDetailController', ['$scope','$rootScope', '$location', '
     }
 
 
+    $scope.addtocart = function (productId, product) {
+        var authData = localStorageService.get('authorizationData');
+
+
+        if (authData != null) {
+            var cartModel = { ProductId: productId, CustomerId: -1, UserID: authData.userName };
+            $.ajax({
+                url: serviceBase + 'api/Cart/PostCart',
+                type: 'POST',
+                data: cartModel,
+                dataType: 'json',
+                success: function (data) {
+                    debugger;
+                    if (data.success == true) {
+                        $scope.iconclass = "angel icon-heart";
+                        $scope.$apply();
+                        //$scope.GetCart();
+
+                        $scope.RemoveFromwishList(product.Id);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    alert("into error");
+                }
+            });
+
+        }
+    }
+
   
 
     $scope.GetRelatedPrdoucts = function (ProductId) {
@@ -305,23 +339,25 @@ app.controller('ProductDetailController', ['$scope','$rootScope', '$location', '
 
     //
 
-    $scope.GetWishList = function (customerId) {
+    $scope.GetWishList = function () {      
+        var authData = localStorageService.get('authorizationData');
+        if (authData != null)
+        {
+            $.ajax({
+                url: serviceBase + 'api/CustomerWishlist/GetWishLists?UserName=' + authData.userName,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    debugger;
+                    $scope.CurrentWishList = data;
+                    window.location.reload();
+                    $scope.$apply();
+                },
+                error: function (xhr, textStatus, errorThrown) {
 
-        $.ajax({
-            url: serviceBase + 'api/CustomerWishlist/GetWishLists?UserID=' + customerId,
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                debugger;
-                $scope.CurrentWishList = data;
-                console.log($scope.CurrentWishList);
-                $scope.$apply();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-             
-            }
-        });
-
+                }
+            });
+        }
     }
 
     $scope.RemoveFromwishList = function (ID) {
@@ -334,7 +370,7 @@ app.controller('ProductDetailController', ['$scope','$rootScope', '$location', '
                 debugger;
                 if (data.success == true) {
                     alert("remove Product in Your Wishlist");
-                    $scope.GetWishList("188cd426-f277-4160-b006-13084388d583 ");
+                    $scope.GetWishList();
                     $scope.$apply();
                 }
             },
@@ -358,59 +394,80 @@ app.controller('ProductDetailController', ['$scope','$rootScope', '$location', '
     }
 
 
-    $scope.addTowishList = function (productId, customerId) {
-        debugger;
-        alert('in');
-        var cid = customerId;
+    //$scope.addTowishList = function (productId) {
+    //    var authData = localStorageService.get('authorizationData');
+        
+    //    if (authData != null) {
+    //        var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: authData.userName };
+    //        $.ajax({
+    //            url: serviceBase + 'api/CustomerWishlist/PostWishList',
+    //            type: 'POST',
+    //            data: wishListmodel,
+    //            dataType: 'json',
+    //            success: function (data) {
+    //                debugger;
+    //                console.log(data);
+    //                if (data.success == true) {                      
 
-        if (cid == null || cid === " " || cid == '') {
-            localStorage.setItem("WishListProductID", productId);
+    //                    $scope.iconclass = "angel icon-heart";
+    //                    $scope.GetWishList();
+    //                    $scope.$apply();
+    //                }
 
-            window.location.href = '/account/login';
+    //            },
+    //            error: function (xhr, textStatus, errorThrown) {
 
-        }
-        else {
+    //            }
+    //        });
+    //    }
+    //    //var cid = customerId;
 
-            if ($scope.CheckisInWishList(productId) == "active") {
-                for (var i = 0; i < $scope.CurrentWishList.length; i++) {
-                    if ($scope.CurrentWishList[i].productId == productId) {
+    //    //if (cid == null || cid === " " || cid == '') {
+    //    //    localStorage.setItem("WishListProductID", productId);
+    //    //    window.location.href = '/account/login';
+    //    //}
+    //    //else {
 
-                        $scope.RemoveFromwishList($scope.CurrentWishList[i].id);
-                        break;
+    //    //    if ($scope.CheckisInWishList(productId) == "active") {
+    //    //        for (var i = 0; i < $scope.CurrentWishList.length; i++) {
+    //    //            if ($scope.CurrentWishList[i].productId == productId) {
 
-                    }
+    //    //                $scope.RemoveFromwishList($scope.CurrentWishList[i].id);
+    //    //                break;
 
-                }
+    //    //            }
 
-            }
-            else {
+    //    //        }
+
+    //    //    }
+    //    //    else {
 
 
-                var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: customerId };
-                $.ajax({
-                    url: serviceBase + 'api/CustomerWishlist/PostWishList',
-                    type: 'POST',
-                    data: wishListmodel,
-                    dataType: 'json',
-                    success: function (data) {
-                        debugger;
-                        console.log(data);
-                        if (data.success == true) {
-                            alert("Add Product in Your Wishlist");
+    //    //        var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: customerId };
+    //    //        $.ajax({
+    //    //            url: serviceBase + 'api/CustomerWishlist/PostWishList',
+    //    //            type: 'POST',
+    //    //            data: wishListmodel,
+    //    //            dataType: 'json',
+    //    //            success: function (data) {
+    //    //                debugger;
+    //    //                console.log(data);
+    //    //                if (data.success == true) {
+    //    //                    alert("Add Product in Your Wishlist");
 
-                            $scope.iconclass = "angel icon-heart";
-                            $scope.GetWishList("188cd426-f277-4160-b006-13084388d583 ");
-                            $scope.$apply();
-                        }
+    //    //                    $scope.iconclass = "angel icon-heart";
+    //    //                    $scope.GetWishList();
+    //    //                    $scope.$apply();
+    //    //                }
 
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
+    //    //            },
+    //    //            error: function (xhr, textStatus, errorThrown) {
                       
-                    }
-                });
-            }
-        }
-    };
+    //    //            }
+    //    //        });
+    //    //    }
+    //    //}
+    //};
 
 
 

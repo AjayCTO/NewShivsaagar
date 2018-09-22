@@ -1,6 +1,6 @@
 ﻿'use strict';
 app.controller('loginController', ['$scope', '$location', 'authService', 'ngAuthSettings', function ($scope, $location, authService, ngAuthSettings) {
-
+    //$("#loadinglogin").modal("hide");
     $scope.loginData = {
         userName: "",
         password: "",
@@ -11,12 +11,15 @@ app.controller('loginController', ['$scope', '$location', 'authService', 'ngAuth
 
     $scope.login = function () {
         debugger
+        ////$("#loadinglogin").modal("show");
+     
         authService.login($scope.loginData).then(function (response) {
-
+            //$("#loadinglogin").modal("hide");
             $location.path('/home');
-
+            window.location.reload();
         },
          function (err) {
+             //$("#loadinglogin").modal("hide");
              $scope.message = err.error_description;
          });
     };

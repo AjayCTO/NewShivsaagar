@@ -14,7 +14,7 @@ namespace AngularJSAuthentication.API.Controllers
         SHIVAMEcommerceDBEntities db = new SHIVAMEcommerceDBEntities();
 
         [HttpGet]
-        [ActionName("GetWishLists")]
+        //[ActionName("GetWishLists")]
         public List<CartListViewModel> GetCart(string UserName)
         {
             try
@@ -83,7 +83,7 @@ namespace AngularJSAuthentication.API.Controllers
         }
 
         [HttpDelete]
-        [ActionName("DeleteFromCart")]
+        //[ActionName("DeleteFromCart")]
         public HttpResponseMessage DeleteFromCart(int id , string UserName)
         {
             var UserId = db.AspNetUsers.FirstOrDefault(x => x.UserName == UserName).Id;     

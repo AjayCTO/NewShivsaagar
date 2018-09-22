@@ -7,11 +7,11 @@
         padding-left:15px;
     }
 </style>
-<section class="hero hero-page gray-bg padding-small">
+<section id="contactscroll"class="hero hero-page gray-bg padding-small">
     <div class="container">
         <div class="row d-flex">
             <div class="col-lg-9 order-2 order-lg-1">
-                <h1>Contact US</h1><p class="lead"></p>
+                <h3>Contact Us</h3><p class="lead"></p>
             </div>
             <div class="col-lg-3 text-right order-1 order-lg-2">
                 <ul class="breadcrumb justify-content-lg-end">
@@ -55,3 +55,9 @@
         </div>
     </div>
 </section>
+
+<script>  
+    $('html, body').animate({
+        scrollTop: $("#contactscroll").offset().top
+    }, 2000);
+    </script>

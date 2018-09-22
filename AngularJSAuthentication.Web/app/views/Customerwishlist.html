@@ -1,5 +1,5 @@
 ﻿
-<section class="hero hero-page gray-bg padding-small">
+<section id="customerwishlistscroll"class="hero hero-page gray-bg padding-small">
     <div class="container">
         <div class="row d-flex">
             <div class="col-lg-9 order-2 order-lg-1">
@@ -28,48 +28,34 @@
 
            
                     <div class="row">
-                        <!--<div class="col-xl-2">
+                        <div ng-show="CurrentWishList.length==0" class="col-xl-12 wishscroll align-items-center">
 
-                        </div>-->
-                        <!--<div class="col-xl-10 row review">
-                            <div class="col-lg-2 text-right">
-                                <h6>Prouct</h6>
-                            </div>
-                            <div class="col-lg-6">
+                                    <h4 class="text-center">WISHLIST EMPTY</h4> 
+                            <p class="text-center">Save your favorite item in one place. Add now, buy later.</p>
+                            <div class="text-center"><img src="../../img/emptyWishlist.png"  height="150" /></div>
+                            <div class="text-center"><a href="#/Product" class="btn btn-template wide">Continue Shopping</a></div>
+                        </div>
+     
+                            <div class="col-xl-12 wishscroll">
 
-                            </div>
-                            <div class="col-lg-2 text-center">
-                                <h6>Price</h6>
-                            </div>
-                            <div class="col-lg-2">
+                                <div class="row review" ng-repeat="x in CurrentWishList">
+                                    <div class="col-lg-2 text-right"><img src="{{GetProductImage(x.image)}}" alt="Han Solo" class="imgproduct"></div>
+                                    <div class="col-lg-6">
+                                        <h6>{{x.productName}}</h6>
 
-                            </div>
-                        </div>-->
+                                        <p class="text-muted text-small">{{x.productDescription}}</p>
+                                    </div>
+                                    <div class="col-lg-2 text-center">
+                                        <p>{{x.productPrice|currency}}</p>
+                                    </div>
+                                    <div class="col-lg-2 text-center">
+                                        <a class="btn btn-template" ng-click="AddToCartGlobal(x.id,x,'_productId')"> <i class="icon-cart"></i>Add to Cart</a>
 
-                        <!--<div class="col-xl-2">
-
-                        </div>-->
-                        <div class="col-xl-12 wishscroll">
-
-                            <div class="row review" ng-repeat="x in CurrentWishList">
-                                <div class="col-lg-2 text-right"><img src="{{GetProductImage(x.image)}}" alt="Han Solo" class="imgproduct"></div>
-                                <div class="col-lg-6">
-                                    <h6>{{x.productName}}</h6>
-
-                                    <p class="text-muted text-small">{{x.productDescription}}</p>
-                                </div>
-                                <div class="col-lg-2 text-center">
-                                    <p>{{x.productPrice|currency}}</p>
-                                </div>
-                                <div class="col-lg-2 text-center">
-                                    <a class="btn btn-template" ng-click="addtocart(x.id,x,'_productId')"> <i class="icon-cart"></i>Add to Cart</a>
-
-                                    <a href="" ng-click="RemoveFromwishList(x.id)"><p>Remove</p></a>
+                                        <a href="" ng-click="RemoveFromwishList(x.id)"><p>Remove</p></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                
-                </div>
             </div>
         </div>
     </div>
@@ -97,3 +83,10 @@
     }
   
 </style>
+
+<script>
+    $('html, body').animate({
+        scrollTop: $("#customerwishlistscroll").offset().top
+    }, 1000);
+  
+</script>

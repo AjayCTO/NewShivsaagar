@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Schema Namespace="SHIVAMEcommerceDBNew18Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+<Schema Namespace="SHIVAMEcommerceDBNew18Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2005" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
   <EntityType Name="__MigrationHistory">
     <Key>
       <PropertyRef Name="MigrationId" />
@@ -89,6 +89,15 @@
     <Property Name="CreatedDateTime" Type="datetime" Nullable="false" />
     <Property Name="resetPasswordToken" Type="nvarchar(max)" />
     <Property Name="Discriminator" Type="nvarchar" MaxLength="128" />
+  </EntityType>
+  <EntityType Name="Carts">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ProductId" Type="int" Nullable="false" />
+    <Property Name="CustomerId" Type="int" Nullable="false" />
+    <Property Name="UserID" Type="nvarchar(max)" />
   </EntityType>
   <EntityType Name="Categories">
     <Key>
@@ -583,6 +592,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
     <Property Name="SupplierID" Type="int" Nullable="false" />
     <Property Name="productId" Type="int" />
     <Property Name="ProductName" Type="nvarchar(max)" />
+    <Property Name="Description" Type="nvarchar(max)" />
     <Property Name="SupplierName" Type="nvarchar(max)" />
     <Property Name="ImageName" Type="nvarchar(max)" />
     <Property Name="ImagePath" Type="nvarchar(max)" />
@@ -665,6 +675,34 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
       </Principal>
       <Dependent Role="AspNetUserRoles">
         <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_dbo_Carts_dbo_Customers_CustomerId">
+    <End Role="Customers" Type="Self.Customers" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Carts" Type="Self.Carts" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Customers">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Carts">
+        <PropertyRef Name="CustomerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_dbo_Carts_dbo_Products_ProductId">
+    <End Role="Products" Type="Self.Products" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Carts" Type="Self.Carts" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Products">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Carts">
+        <PropertyRef Name="ProductId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -1093,6 +1131,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
     <Parameter Name="LowPrice" Type="nvarchar" Mode="In" />
     <Parameter Name="HighPrice" Type="nvarchar" Mode="In" />
     <Parameter Name="IsFeatured" Type="nvarchar" Mode="In" />
+    <Parameter Name="ProductIds" Type="nvarchar(max)" Mode="In" />
   </Function>
   <Function Name="SplitString" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
     <Parameter Name="Input" Type="nvarchar(max)" Mode="In" />
@@ -1113,6 +1152,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
     <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Carts" EntityType="Self.Carts" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Claims" EntityType="Self.Claims" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="CustomerAddresses" EntityType="Self.CustomerAddresses" Schema="dbo" store:Type="Tables" />
@@ -1190,6 +1230,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
     [ProductValues_view].[SupplierID] AS [SupplierID], 
     [ProductValues_view].[productId] AS [productId], 
     [ProductValues_view].[ProductName] AS [ProductName], 
+    [ProductValues_view].[Description] AS [Description], 
     [ProductValues_view].[SupplierName] AS [SupplierName], 
     [ProductValues_view].[ImageName] AS [ImageName], 
     [ProductValues_view].[ImagePath] AS [ImagePath], 
@@ -1219,6 +1260,14 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
     <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
       <End Role="AspNetUsers" EntitySet="AspNetUsers" />
       <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
+    </AssociationSet>
+    <AssociationSet Name="FK_dbo_Carts_dbo_Customers_CustomerId" Association="Self.FK_dbo_Carts_dbo_Customers_CustomerId">
+      <End Role="Customers" EntitySet="Customers" />
+      <End Role="Carts" EntitySet="Carts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_dbo_Carts_dbo_Products_ProductId" Association="Self.FK_dbo_Carts_dbo_Products_ProductId">
+      <End Role="Products" EntitySet="Products" />
+      <End Role="Carts" EntitySet="Carts" />
     </AssociationSet>
     <AssociationSet Name="FK_dbo_Categories_dbo_Categories_ParentCategory" Association="Self.FK_dbo_Categories_dbo_Categories_ParentCategory">
       <End Role="Categories" EntitySet="Categories" />

@@ -199,6 +199,7 @@
     <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_Customers_dbo_AspNetUsers_UserID" FromRole="Customers" ToRole="AspNetUsers" />
     <NavigationProperty Name="Orders" Relationship="Self.FK_dbo_Orders_dbo_Customers_CustomerID" FromRole="Customers" ToRole="Orders" />
     <NavigationProperty Name="WishLists" Relationship="Self.FK_dbo_WishLists_dbo_Customers_CustomerId" FromRole="Customers" ToRole="WishLists" />
+    <NavigationProperty Name="Carts" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Customers_CustomerId" FromRole="Customer" ToRole="Cart" />
   </EntityType>
   <EntityType Name="emailrecord">
     <Key>
@@ -478,6 +479,7 @@
     <NavigationProperty Name="Supplier" Relationship="Self.FK_dbo_Products_dbo_Suppliers_SupplierID" FromRole="Products" ToRole="Suppliers" />
     <NavigationProperty Name="UnitOfMeasure" Relationship="Self.FK_dbo_Products_dbo_UnitOfMeasures_UnitOfMeasuresId" FromRole="Products" ToRole="UnitOfMeasures" />
     <NavigationProperty Name="WishLists" Relationship="Self.FK_dbo_WishLists_dbo_Products_ProductId" FromRole="Products" ToRole="WishLists" />
+    <NavigationProperty Name="Carts" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Products_ProductId" FromRole="Product" ToRole="Cart" />
   </EntityType>
   <EntityType Name="ProductStatu">
     <Key>
@@ -648,6 +650,7 @@
     <Property Name="ImageName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <Property Name="ImagePath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <Property Name="CateogryID" Type="Int32" />
+    <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
   </EntityType>
   <Association Name="FK_dbo_AllProductImages_dbo_Suppliers_SupplierID">
     <End Role="Suppliers" Type="Self.Supplier" Multiplicity="0..1" />
@@ -1333,6 +1336,55 @@
       <Parameter Name="LowPrice" Mode="In" Type="String" />
       <Parameter Name="HighPrice" Mode="In" Type="String" />
       <Parameter Name="IsFeatured" Mode="In" Type="String" />
+      <Parameter Name="ProductIds" Mode="In" Type="String" />
     </FunctionImport>
+    <EntitySet Name="Carts" EntityType="SHIVAMEcommerceDBNew18Model.Cart" />
+    <AssociationSet Name="FK_dbo_Carts_dbo_Customers_CustomerId" Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Customers_CustomerId">
+      <End Role="Customer" EntitySet="Customers" />
+      <End Role="Cart" EntitySet="Carts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_dbo_Carts_dbo_Products_ProductId" Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Products_ProductId">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="Cart" EntitySet="Carts" />
+    </AssociationSet>
   </EntityContainer>
+  <EntityType Name="Cart">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProductId" Type="Int32" Nullable="false" />
+    <Property Name="CustomerId" Type="Int32" Nullable="false" />
+    <Property Name="UserID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Customer" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Customers_CustomerId" FromRole="Cart" ToRole="Customer" />
+    <NavigationProperty Name="Product" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Products_ProductId" FromRole="Cart" ToRole="Product" />
+  </EntityType>
+  <Association Name="FK_dbo_Carts_dbo_Customers_CustomerId">
+    <End Type="SHIVAMEcommerceDBNew18Model.Customer" Role="Customer" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="SHIVAMEcommerceDBNew18Model.Cart" Role="Cart" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Customer">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Cart">
+        <PropertyRef Name="CustomerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_dbo_Carts_dbo_Products_ProductId">
+    <End Type="SHIVAMEcommerceDBNew18Model.Product" Role="Product" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="SHIVAMEcommerceDBNew18Model.Cart" Role="Cart" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Cart">
+        <PropertyRef Name="ProductId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>

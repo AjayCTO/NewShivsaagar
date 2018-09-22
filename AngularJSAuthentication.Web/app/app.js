@@ -38,7 +38,6 @@ app.config(function ($routeProvider) {
         templateUrl: "/app/views/associate.html"
     });
 
-
     $routeProvider.when("/Merchant", {
         controller: "MerchantController",
         templateUrl: "/app/views/Merchant.html"
@@ -78,8 +77,7 @@ app.config(function ($routeProvider) {
     $routeProvider.when("/checkout", {
         controller: "checkOutController",
         templateUrl: "/app/views/checkOut.html"
-    });
-    
+    });    
 
     $routeProvider.when("/Contact", {
         controller: "contactController",
@@ -90,7 +88,7 @@ app.config(function ($routeProvider) {
         templateUrl: "/app/views/ProductDetails.html"
     });
     $routeProvider.when("/WishList", {
-        controller: "WishListController",
+        controller: "WishListController1",
         templateUrl: "/app/views/Customerwishlist.html"
     });
 

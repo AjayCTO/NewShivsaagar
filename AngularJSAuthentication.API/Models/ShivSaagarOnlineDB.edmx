@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="SHIVAMEcommerceDBNew18Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="SHIVAMEcommerceDBNew18Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2005" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="__MigrationHistory">
           <Key>
             <PropertyRef Name="MigrationId" />
@@ -94,6 +94,15 @@
           <Property Name="CreatedDateTime" Type="datetime" Nullable="false" />
           <Property Name="resetPasswordToken" Type="nvarchar(max)" />
           <Property Name="Discriminator" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="Carts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="UserID" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Categories">
           <Key>
@@ -588,6 +597,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <Property Name="SupplierID" Type="int" Nullable="false" />
           <Property Name="productId" Type="int" />
           <Property Name="ProductName" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="SupplierName" Type="nvarchar(max)" />
           <Property Name="ImageName" Type="nvarchar(max)" />
           <Property Name="ImagePath" Type="nvarchar(max)" />
@@ -670,6 +680,34 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
             </Principal>
             <Dependent Role="AspNetUserRoles">
               <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Carts_dbo_Customers_CustomerId">
+          <End Role="Customers" Type="Self.Customers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Carts" Type="Self.Carts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Carts">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Carts_dbo_Products_ProductId">
+          <End Role="Products" Type="Self.Products" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Carts" Type="Self.Carts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Carts">
+              <PropertyRef Name="ProductId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1098,6 +1136,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <Parameter Name="LowPrice" Type="nvarchar" Mode="In" />
           <Parameter Name="HighPrice" Type="nvarchar" Mode="In" />
           <Parameter Name="IsFeatured" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProductIds" Type="nvarchar(max)" Mode="In" />
         </Function>
         <Function Name="SplitString" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Input" Type="nvarchar(max)" Mode="In" />
@@ -1118,6 +1157,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Carts" EntityType="Self.Carts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Claims" EntityType="Self.Claims" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomerAddresses" EntityType="Self.CustomerAddresses" Schema="dbo" store:Type="Tables" />
@@ -1195,6 +1235,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
     [ProductValues_view].[SupplierID] AS [SupplierID], 
     [ProductValues_view].[productId] AS [productId], 
     [ProductValues_view].[ProductName] AS [ProductName], 
+    [ProductValues_view].[Description] AS [Description], 
     [ProductValues_view].[SupplierName] AS [SupplierName], 
     [ProductValues_view].[ImageName] AS [ImageName], 
     [ProductValues_view].[ImagePath] AS [ImagePath], 
@@ -1224,6 +1265,14 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Carts_dbo_Customers_CustomerId" Association="Self.FK_dbo_Carts_dbo_Customers_CustomerId">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Carts" EntitySet="Carts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Carts_dbo_Products_ProductId" Association="Self.FK_dbo_Carts_dbo_Products_ProductId">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="Carts" EntitySet="Carts" />
           </AssociationSet>
           <AssociationSet Name="FK_dbo_Categories_dbo_Categories_ParentCategory" Association="Self.FK_dbo_Categories_dbo_Categories_ParentCategory">
             <End Role="Categories" EntitySet="Categories" />
@@ -1338,8 +1387,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
             <End Role="WishLists" EntitySet="WishLists" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SHIVAMEcommerceDBNew18Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1542,6 +1590,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_Customers_dbo_AspNetUsers_UserID" FromRole="Customers" ToRole="AspNetUsers" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_dbo_Orders_dbo_Customers_CustomerID" FromRole="Customers" ToRole="Orders" />
           <NavigationProperty Name="WishLists" Relationship="Self.FK_dbo_WishLists_dbo_Customers_CustomerId" FromRole="Customers" ToRole="WishLists" />
+          <NavigationProperty Name="Carts" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Customers_CustomerId" FromRole="Customer" ToRole="Cart" />
         </EntityType>
         <EntityType Name="emailrecord">
           <Key>
@@ -1821,6 +1870,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <NavigationProperty Name="Supplier" Relationship="Self.FK_dbo_Products_dbo_Suppliers_SupplierID" FromRole="Products" ToRole="Suppliers" />
           <NavigationProperty Name="UnitOfMeasure" Relationship="Self.FK_dbo_Products_dbo_UnitOfMeasures_UnitOfMeasuresId" FromRole="Products" ToRole="UnitOfMeasures" />
           <NavigationProperty Name="WishLists" Relationship="Self.FK_dbo_WishLists_dbo_Products_ProductId" FromRole="Products" ToRole="WishLists" />
+          <NavigationProperty Name="Carts" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Products_ProductId" FromRole="Product" ToRole="Cart" />
         </EntityType>
         <EntityType Name="ProductStatu">
           <Key>
@@ -1991,6 +2041,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <Property Name="ImageName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ImagePath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CateogryID" Type="Int32" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_dbo_AllProductImages_dbo_Suppliers_SupplierID">
           <End Role="Suppliers" Type="Self.Supplier" Multiplicity="0..1" />
@@ -2627,10 +2678,10 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
             <Parameter Name="Character" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetProductsCount">
-            <Parameter Name="SupplierId" Mode="In" Type="String" />
+          <Parameter Name="SupplierId" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetProductsDetail">
-            <Parameter Name="SupplierId" Mode="In" Type="String" />
+          <Parameter Name="SupplierId" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="InsertProduct">
             <Parameter Name="Name" Mode="In" Type="String" />
@@ -2676,8 +2727,57 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
             <Parameter Name="LowPrice" Mode="In" Type="String" />
             <Parameter Name="HighPrice" Mode="In" Type="String" />
             <Parameter Name="IsFeatured" Mode="In" Type="String" />
+            <Parameter Name="ProductIds" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="Carts" EntityType="SHIVAMEcommerceDBNew18Model.Cart" />
+          <AssociationSet Name="FK_dbo_Carts_dbo_Customers_CustomerId" Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Customers_CustomerId">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Cart" EntitySet="Carts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Carts_dbo_Products_ProductId" Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Products_ProductId">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="Cart" EntitySet="Carts" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Cart">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="UserID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Customer" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Customers_CustomerId" FromRole="Cart" ToRole="Customer" />
+          <NavigationProperty Name="Product" Relationship="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Products_ProductId" FromRole="Cart" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_dbo_Carts_dbo_Customers_CustomerId">
+          <End Type="SHIVAMEcommerceDBNew18Model.Customer" Role="Customer" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="SHIVAMEcommerceDBNew18Model.Cart" Role="Cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Cart">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Carts_dbo_Products_ProductId">
+          <End Type="SHIVAMEcommerceDBNew18Model.Product" Role="Product" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="SHIVAMEcommerceDBNew18Model.Cart" Role="Cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Cart">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3271,6 +3371,7 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <EntitySetMapping Name="ProductValues_view">
             <EntityTypeMapping TypeName="SHIVAMEcommerceDBNew18Model.ProductValues_view">
               <MappingFragment StoreEntitySet="ProductValues_view">
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="AttributeValue" ColumnName="AttributeValue" />
                 <ScalarProperty Name="IsFeatured" ColumnName="IsFeatured" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
@@ -3301,6 +3402,16 @@ warning 6002: The table/view 'SHIVAMEcommerceDBNew18.dbo.ProductValues_view' doe
           <FunctionImportMapping FunctionImportName="InsertProductAttributes" FunctionName="SHIVAMEcommerceDBNew18Model.Store.InsertProductAttributes" />
           <FunctionImportMapping FunctionImportName="SP_GetAllSortedProducts" FunctionName="SHIVAMEcommerceDBNew18Model.Store.SP_GetAllSortedProducts" />
           <FunctionImportMapping FunctionImportName="SP_GetAllSortedProductsFrontFace" FunctionName="SHIVAMEcommerceDBNew18Model.Store.SP_GetAllSortedProductsFrontFace" />
+          <EntitySetMapping Name="Carts">
+            <EntityTypeMapping TypeName="SHIVAMEcommerceDBNew18Model.Cart">
+              <MappingFragment StoreEntitySet="Carts">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row d-flex">
             <div class="col-lg-9 order-2 order-lg-1">
-                <h1>Shopping cart</h1><p class="lead text-muted">You currently have {{shoppingCart.length}} items in your shopping cart</p>
+                <h3>Shopping cart</h3><p class="lead text-muted">You currently have {{shoppingCart.length}} items in your shopping cart</p>
             </div>
             <div class="col-lg-3 text-right order-1 order-lg-2">
                 <ul class="breadcrumb justify-content-lg-end">
@@ -17,7 +17,14 @@
 <section class="shopping-cart">
     <div class="container">
         <div class="basket">
-            <div class="basket-holder">
+            <div ng-show="shoppingCart.length==0" class="basket-holder">
+                <h3 class="text-center">Empty Cart</h3>
+                <p class="text-center">Your Shopping Cart is empty.</p> 
+                <div class="text-center"><img src="../../img/empty-cart-png.png" height="180" /></div>
+                <div class="text-center"><a href="#/Product" class="btn btn-template wide">Continue Shopping</a></div>
+            </div>
+
+            <div ng-hide="shoppingCart.length==0" class="basket-holder">
                 <div class="basket-header">
                     <div class="row">
                         <div class="col-5">Product</div>
@@ -56,13 +63,13 @@
                         </div>
                     </div>
                     <!-- Product-->
-                    
+
                 </div>
             </div>
-        </div>
+            </div>
     </div>
     <div class="container">
-        <div class="CTAs d-flex align-items-center justify-content-center justify-content-md-end flex-column flex-md-row"><a href="#" class="btn btn-template wide">Continue Shopping</a></div>
+        <div class="CTAs d-flex align-items-center justify-content-center justify-content-md-end flex-column flex-md-row"><a href="#" ng-hide="shoppingCart.length==0" class="btn btn-template wide">Continue Shopping</a></div>
     </div>
 </section>
 

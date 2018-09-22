@@ -380,6 +380,14 @@
     <Content Include="Content\css.css" />
     <Content Include="Content\dataTables.bootstrap.min.css" />
     <Content Include="Content\dataTables.bootstrap4.min.css" />
+    <Content Include="Content\emailsender\jquery-ui-1.10.4.custom.min.css" />
+    <Content Include="Content\emailsender\jquery.autocomplete.multiselect.js" />
+    <Content Include="Content\emailsender\log-clearly-inventory-logo-d-380-74-v01.png" />
+    <Content Include="Content\emailsender\main.css" />
+    <Content Include="Content\emailsender\main.js" />
+    <Content Include="Content\emailsender\modernizr-2.6.2.min.js" />
+    <Content Include="Content\emailsender\normalize.min.css" />
+    <Content Include="Content\emailsender\style.min.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\logo.png" />

@@ -1,5 +1,6 @@
 ﻿'use strict';
-app.controller('indexController', ['$scope', '$rootScope', '$location', 'authService', function ($scope, $rootScope, $location, authService) {
+app.controller('indexController', ['$scope', '$rootScope', 'localStorageService', '$location', 'authService', function ($scope, $rootScope, localStorageService, $location, authService) {
+   
     $scope.searchcategories = [];
     var _localCategories = localStorage.getItem("Categories");
     if (_localCategories != null && _localCategories != undefined) {
@@ -15,16 +16,17 @@ app.controller('indexController', ['$scope', '$rootScope', '$location', 'authSer
     var _localCartItems = localStorage.getItem("shoppingCart");
     if (_localCartItems != null && _localCartItems != undefined) {
         _localCartItems = JSON.parse(_localCartItems);
-
+       
     }
     else {
         _localCartItems = [];
     }
-    $scope.shoppingCart = _localCartItems;
+    //$scope.shoppingCart = _localCartItems;
   
-    CalculateTotal();
+    //CalculateTotal();
 
     $scope.logOut = function () {
+        $scope.shoppingCart = []
         authService.logOut();
         $location.path('/home');
     }
@@ -39,15 +41,33 @@ app.controller('indexController', ['$scope', '$rootScope', '$location', 'authSer
     $rootScope.$on("AddToCart", function (event, productId, product, ID) {
         $scope.AddToCart(productId, product, ID);
     });
+
+    $rootScope.$on("addTowishList", function (event, productId) {
+        $scope.addTowishList(productId);
+    });
+
+    //$rootScope.$on("GetWishList", function (event) {
+    //    $scope.GetWishList();
+    //});
+
+
     $rootScope.$on("DeleteFromCart", function (event, product) {
         $scope.DeleteFromCart(product);
+
     });
+
+
+    $rootScope.$on("RemoveFromwishList", function (event, ID) {
+        $scope.RemoveFromwishList(ID);
+
+    });
+
     $rootScope.$on("CalculateCart", function (event, cart) {
         CalculateTotal(cart);
     });
     
     $scope.GetCategories = function () {
-
+       
         $scope.loadallcat = false;
 
         $.ajax({
@@ -56,20 +76,11 @@ app.controller('indexController', ['$scope', '$rootScope', '$location', 'authSer
             dataType: 'json',
             success: function (data, textStatus, xhr) {
                 $scope.searchcategories = data;
-
                 localStorage.setItem("Categories", JSON.stringify(data));
 
-             
-
-                debugger;
-
-
+               
                 $scope.loadallcat = true;
-
                 $scope.$apply();
-
-
-
             },
             error: function (xhr, textStatus, errorThrown) {
                 $scope.categories = [];
@@ -80,30 +91,29 @@ app.controller('indexController', ['$scope', '$rootScope', '$location', 'authSer
 
     $scope.GetCart = function () {
         var authData = localStorageService.get('authorizationData');
-        debugger;
-        $.ajax({
-            url: serviceBase + 'api/Cart/GetCart?UserName=' + authData.userName,
-            type: 'GET',
-            dataType: 'json',
-            success: function (data, textStatus, xhr) {
-                debugger;
-
-                $scope.CurrentCartList = data;
-
-                $scope.shoppingCart = $scope.CurrentCartList;
-
-                for (var i = 0; i < $scope.shoppingCart.length; i++) {
-                    $scope.shoppingCart[i].Quantity = 1;
+       
+        if (authData != null)
+        {
+            $.ajax({
+                url: serviceBase + '/api/Cart/GetCart?UserName=' + authData.userName,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data, textStatus, xhr) {
+                    debugger;
+                    $scope.CurrentCartList = data;
+                    $scope.shoppingCart = $scope.CurrentCartList;
+                    for (var i = 0; i < $scope.shoppingCart.length; i++) {
+                        $scope.shoppingCart[i].Quantity = 1;
+                    }                   
+                    console.log($scope.CurrentCartList);
+                    CalculateTotal(data);
+                    $scope.$apply();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    alert("GetCart error");
                 }
-
-                console.log($scope.CurrentCartList);
-                $scope.$apply();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                alert("into error");
-            }
-        });
-
+            });
+        }
     }
 
     $scope.GoToProductsWithCategoryID = function (ID) {
@@ -126,94 +136,64 @@ app.controller('indexController', ['$scope', '$rootScope', '$location', 'authSer
         return "../img/no-image.png";
     }
 
-    $scope.AddToCart = function (productId, product, ID) {
-        debugger;
-        var authData = localStorageService.get('authorizationData');
+   
 
-        if (product[5] !== 0) {
-            //var item = $scope.shoppingCart.filter(function (item) {
-            //    if (item.ProductId === product[8]) {
-            //        item.Quantity = item.Quantity + 1;
-            //    }
-            //    return item.ProductId === product[8];
-            //})[0];
-            //if (item == undefined) {
-            //    $scope.CartProductsCounter++;
-            //    $scope.shoppingCart.push({ ProductId: product[8], Image: product[2], Quantity: 1, ProductName: product[3], ProductQuantity: product[5], Cost: product[4], discount: 0, SupplierID: product[11] });
-
-            //}
-            Animate2Item("#" + ID + productId);
-
-            //localStorage.setItem("shoppingCart", JSON.stringify($scope.shoppingCart));
-
-            var cartModel = { ProductId: productId, CustomerId: -1, UserID: authData.userName };
-            $.ajax({
-                url: serviceBase + 'api/Cart/PostCart',
-                type: 'POST',
-                data: cartModel,
-                dataType: 'json',
-                success: function (data) {
-                    debugger;
-                    if (data.success == true) {
-                        $scope.iconclass = "angel icon-heart";
-                        $scope.$apply();
-                        $scope.GetCart();
-                    }
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    alert("into error");
-                }
-            });
-
-
-            CheckScopeBeforeApply();
-            CalculateTotal();
-        }
-        else {
-            toastr.error("You can't Add this Item becasue it is Not Available in Stock");
-        }
-    };
-
-    $scope.DeleteFromCart = function (Product) {
-        for (var i = 0; i < $scope.shoppingCart.length; i++) {
-            if ($scope.shoppingCart[i].ProductId == Product.ProductId) {
-                $scope.shoppingCart.splice($.inArray(Product, $scope.shoppingCart), 1);
-            }
-        }
-
-        //localStorage.setItem("shoppingCart", JSON.stringify($scope.shoppingCart));
-
-
-
-        var authData = localStorageService.get('authorizationData');
-
-        $.ajax({
-            url: serviceBase + 'api/Cart/DeleteFromCart?UserName=' + authData.userName + '&id=' + Product.id,
-            type: 'DELETE',
-            dataType: 'json',
-            success: function (data, textStatus, xhr) {
-                $scope.GetCart();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                alert("into error");
-            }
-        });
-
-
-
-        CheckScopeBeforeApply();
-        CalculateTotal();
-
-        return false;
+    $scope.RemoveFromwishList = function (ID) {
+        authService.RemoveFromwishList(ID).then(function (response) {
+            $scope.GetWishListfromService();            
+        },
+         function (err) {
+             $scope.message = err.error_description;
+         });
     }
 
+
+
+
+    $scope.DeleteFromCart = function (Product) {       
+        bootbox.confirm("Are you sure you want to delete this item from cart ?", function (result) {
+            if (result) {
+                for (var i = 0; i < $scope.shoppingCart.length; i++) {
+                    if ($scope.shoppingCart[i].ProductId == Product.ProductId) {
+                        $scope.shoppingCart.splice($.inArray(Product, $scope.shoppingCart), 1);
+                    }
+                }
+
+                //localStorage.setItem("shoppingCart", JSON.stringify($scope.shoppingCart));
+
+                var authData = localStorageService.get('authorizationData');
+
+                $.ajax({
+                    url: serviceBase + 'api/Cart/DeleteFromCart?UserName=' + authData.userName + '&id=' + Product.id,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function (data, textStatus, xhr) {   
+                        toastr.success("Success! Remove from cart");
+                        $scope.GetCart();
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        alert("into error");
+                    }
+                });
+
+     
+                CheckScopeBeforeApply();
+                CalculateTotal();
+
+                return false;
+            }
+        });
+    };
+
+
     function CalculateTotal(cart) {
+        debugger;
         $scope.shoppingCart = cart==undefined || cart==null ?$scope.shoppingCart:cart;
         var total = 0;
 
         for (var i = 0; i < $scope.shoppingCart.length; i++) {
             var product = $scope.shoppingCart[i];
-            total += (product.Cost * product.Quantity);
+            total += (product.productPrice * product.Quantity);
         }
         $scope.TotalOfCartItems = total;
         _globalTotal = total;
@@ -249,5 +229,242 @@ app.controller('indexController', ['$scope', '$rootScope', '$location', 'authSer
             $scope.$apply();
         }
     };
+
+    $scope.GetWishListfromService = function () {
+        authService.GetWishList().then(function (response) {
+            $scope.CurrentWishList = response;
+        },
+         function (err) {
+             $scope.message = err.error_description;
+         });
+    }
+
+    //$scope.GetWishList = function () {
+    //    debugger;
+    //    var authData = localStorageService.get('authorizationData');
+    //    if (authData != null)
+    //    {
+    //        debugger;
+    //        $.ajax({
+    //            //url: serviceBase + 'api/CustomerWishlist/GetWishLists?UserName=' +authData.userName,
+    //            url: serviceBase + 'api/CustomerWishlist/GetWishLists',
+    //            data: {UserName: authData.userName},
+    //            type: 'GET',
+    //            dataType: 'json',
+    //            success: function (data, textStatus, xhr) {
+    //                debugger;
+    //                console.log(data);
+
+    //                $scope.CurrentWishList = data;
+
+    //                console.log($scope.CurrentWishList);
+    //                $scope.$apply();
+    //            },
+         
+    //        });
+    //    }       
+
+    //}
+
+   
+
+    $scope.CheckisInWishList = function (ProductID) {
+        debugger;
+        if ($scope.CurrentWishList != undefined) {
+            for (var i = 0; i < $scope.CurrentWishList.length; i++) {
+                if ($scope.CurrentWishList[i].productId == ProductID) {
+                    return "exist";
+                }
+            }
+        }       
+        return "";
+    }
+
+
+    $scope.CheckisInCart = function (ProductID) {
+        debugger;
+        if ($scope.CurrentCartList != undefined ) {
+            for (var i = 0; i < $scope.CurrentCartList.length; i++) {
+                if ($scope.CurrentCartList[i].productId == ProductID) {
+                    return "exist";
+                }
+            }
+        }       
+        return "";
+    }
+
+    $scope.addTowishList = function (productId) {
+      
+        debugger;     
+        var authData = localStorageService.get('authorizationData');        
+        if (authData == null) {
+            //Location.Path("/login");
+            $location.path("/login");
+        }
+        else {
+            if ($scope.CheckisInWishList(productId) == "exist") {
+                debugger;
+                for (var i = 0; i < $scope.CurrentWishList.length; i++) {
+                    if ($scope.CurrentWishList[i].productId == productId) {
+                        toastr.warning("Already added in you wishlist");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+
+                var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: authData.userName };
+                $.ajax({
+                    url: serviceBase + '/api/CustomerWishlist/PostWishList',
+                    type: 'POST',
+                    data: wishListmodel,
+                    dataType: 'json',
+                    success: function (data) {
+                        debugger;
+                        console.log(data);
+                        if (data.success == true) {
+                            $scope.iconclass = "angel icon-heart";
+                            toastr.success("Product successfully added in wishlist");
+                            $("#exampleModal").modal("hide");
+                            //$scope.GetWishList();
+                            $scope.GetWishListfromService();
+                            $scope.$apply();
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                    }
+                });
+            }
+        }
+        //else {
+        //    debugger;
+        //    $("#exampleModal").modal("hide");
+        //    $(".modal-backdrop").remove();
+        //    debugger;
+        //    $location.path('/login');
+
+        //}
+        //var cid = customerId;
+
+        //if (cid == null || cid === " " || cid == '') {
+        //    localStorage.setItem("WishListProductID", productId);
+
+        //    window.location.href = '/account/login';
+
+        //}
+        //else {
+
+        //    if ($scope.CheckisInWishList(productId) == "active") {
+        //        for (var i = 0; i < $scope.CurrentWishList.length; i++) {
+        //            if ($scope.CurrentWishList[i].productId == productId) {
+
+        //                $scope.RemoveFromwishList($scope.CurrentWishList[i].id);
+        //                break;
+
+        //            }
+
+        //        }
+
+        //    }
+        //    else {
+
+
+        //        var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: customerId };
+        //        $.ajax({
+        //            url: serviceBase + 'api/CustomerWishlist/PostWishList',
+        //            type: 'POST',
+        //            data: wishListmodel,
+        //            dataType: 'json',
+        //            success: function (data) {
+        //                debugger;
+        //                console.log(data);
+        //                if (data.success == true) {
+        //                    alert("Add Product in Your Wishlist");
+
+        //                    $scope.iconclass = "angel icon-heart";
+        //                    $scope.GetWishList("188cd426-f277-4160-b006-13084388d583 ");
+        //                    $scope.$apply();
+        //                }
+
+        //            },
+        //            error: function (xhr, textStatus, errorThrown) {
+
+        //            }
+        //        });
+        //    }
+        //}
+    };
+
+    $scope.AddToCart = function (productId, product, ID) {
+       
+        var authData = localStorageService.get('authorizationData');        
+        if (authData == null) {
+            //Location.Path("/login");
+            $location.path("/login");
+        }
+        else {
+            if ($scope.CheckisInCart(productId) == "exist") {
+                toastr.warning("Already added in you Cart.Please update quantity from cart.");              
+            }
+            else
+            {
+                debugger;
+                if (product[5] !== 0) {
+                    var item = $scope.shoppingCart.filter(function (item) {
+                        if (item.productId === product[8]) {
+                            item.Quantity = item.Quantity + 1;
+                        }
+                        return item.productId === product[8];
+                    })[0];
+                    if (item == undefined) {
+                        $scope.CartProductsCounter++;
+                        $scope.shoppingCart.push({ ProductId: product[8], Image: product[2], Quantity: 1, ProductName: product[3], ProductQuantity: product[5], Cost: product[4], discount: 0, SupplierID: product[11] });
+
+                    }
+                    Animate2Item("#" + ID + productId);
+
+                    //localStorage.setItem("shoppingCart", JSON.stringify($scope.shoppingCart));
+                    debugger;
+                    var cartModel = { ProductId: productId, CustomerId: -1, UserID: authData.userName };
+                    $.ajax({
+
+                        url: serviceBase + 'api/Cart/PostCart',
+                        type: 'POST',
+                        data: cartModel,
+                        dataType: 'json',
+                        success: function (data) {
+                            debugger;
+                            if (data.success == true) {
+                                toastr.success("Success! Product Added into your cart");
+                                $("#exampleModal").modal("hide");
+                                $scope.$apply();
+                                $scope.GetCart();
+
+                            }
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            alert("into error");
+                        }
+                    });
+                    CheckScopeBeforeApply();
+                    CalculateTotal();
+                }
+                else {
+                    toastr.error("You can't Add this Item becasue it is Not Available in Stock");
+                }
+            }
+        }        
+    };
+
+
+    function init() {
+        $scope.GetCart();
+        $scope.GetWishListfromService();
+        //$scope.GetWishList();
+    }
+
+
+    init();
 
 }]);

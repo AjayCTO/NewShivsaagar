@@ -66,6 +66,7 @@ namespace AngularJSAuthentication.API.Models
         public virtual DbSet<GetAttribute> GetAttributes { get; set; }
         public virtual DbSet<ProductAttribute_view> ProductAttribute_view { get; set; }
         public virtual DbSet<ProductValues_view> ProductValues_view { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
     
         [DbFunction("SHIVAMEcommerceDBEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string input, string character)
@@ -218,7 +219,7 @@ namespace AngularJSAuthentication.API.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_GetAllSortedProducts", displayLengthParameter, displayStartParameter, sortColParameter, sortDirParameter, searchTextParameter, supplierIdParameter);
         }
     
-        public virtual int SP_GetAllSortedProductsFrontFace(Nullable<int> displayLength, Nullable<int> displayStart, string sortCol, string sortDir, string searchText, string filterText, string categories, string lowPrice, string highPrice, string isFeatured)
+        public virtual int SP_GetAllSortedProductsFrontFace(Nullable<int> displayLength, Nullable<int> displayStart, string sortCol, string sortDir, string searchText, string filterText, string categories, string lowPrice, string highPrice, string isFeatured, string productIds)
         {
             var displayLengthParameter = displayLength.HasValue ?
                 new ObjectParameter("DisplayLength", displayLength) :
@@ -260,7 +261,11 @@ namespace AngularJSAuthentication.API.Models
                 new ObjectParameter("IsFeatured", isFeatured) :
                 new ObjectParameter("IsFeatured", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_GetAllSortedProductsFrontFace", displayLengthParameter, displayStartParameter, sortColParameter, sortDirParameter, searchTextParameter, filterTextParameter, categoriesParameter, lowPriceParameter, highPriceParameter, isFeaturedParameter);
+            var productIdsParameter = productIds != null ?
+                new ObjectParameter("ProductIds", productIds) :
+                new ObjectParameter("ProductIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_GetAllSortedProductsFrontFace", displayLengthParameter, displayStartParameter, sortColParameter, sortDirParameter, searchTextParameter, filterTextParameter, categoriesParameter, lowPriceParameter, highPriceParameter, isFeaturedParameter, productIdsParameter);
         }
     }
 }

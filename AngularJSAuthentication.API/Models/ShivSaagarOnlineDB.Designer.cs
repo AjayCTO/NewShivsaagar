@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'E:\Shivam_Ecommerce\ShivSagarOnline\AngularJSAuthentication.API\Models\ShivSaagarOnlineDB.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Users\SHIVAMITCS03\Desktop\18sep\Shivam_Ecommerce14\ShivSagarOnline\AngularJSAuthentication.API\Models\ShivSaagarOnlineDB.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

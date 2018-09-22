@@ -18,6 +18,7 @@ namespace AngularJSAuthentication.API.Models
         {
             this.Orders = new HashSet<Order>();
             this.WishLists = new HashSet<WishList>();
+            this.Carts = new HashSet<Cart>();
         }
     
         public int Id { get; set; }
@@ -39,5 +40,6 @@ namespace AngularJSAuthentication.API.Models
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
+        public virtual ICollection<Cart> Carts { get; set; }
     }
 }

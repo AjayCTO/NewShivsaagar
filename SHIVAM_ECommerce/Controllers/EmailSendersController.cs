@@ -134,7 +134,7 @@ namespace SHIVAM_ECommerce.Controllers
 
            recordsTotal = v.Count();
            var data = v.Skip(skip).Take(pageSize).ToList();
-           return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data.Select(x => new { x.Id, x.Subject, x.SenderId,x.Attachment,x.SendingDate,x.ContentMsg,x.IsAttachment }) }, JsonRequestBehavior.AllowGet);
+           return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data.Select(x => new { x.Id, x.Subject, x.SenderId,x.Attachment,x.SendingDate,x.ContentMsg,x.IsAttachment,x.IsRead }) }, JsonRequestBehavior.AllowGet);
        }
 
 
@@ -219,47 +219,50 @@ namespace SHIVAM_ECommerce.Controllers
         {
             if (ModelState.IsValid)
             {
-                 if (file != null)
-                {
-                    emailsender.IsAttachment = true;
-                    string pic = System.IO.Path.GetFileName(file.FileName);
-                    string path = System.IO.Path.Combine(
-                                           Server.MapPath("~/images"), pic);
-                    // file is uploaded
-                    file.SaveAs(path);
-
-                emailsender.Attachment = pic;
-
-                    // save the image path path to the database or you can send image 
-                    // directly to database
-                    // in-case if you want to store byte[] ie. for DB
-                    using (MemoryStream ms = new MemoryStream())
+              string s = emailsender.ReceiverIDs;
+     
+               string[] words = s.Split(',');
+                foreach (string word in words)
+                 {
+           
+      
+                    if (file != null)
                     {
-                        file.InputStream.CopyTo(ms);
-                        byte[] array = ms.GetBuffer();
+                        emailsender.IsAttachment = true;
+                        string pic = System.IO.Path.GetFileName(file.FileName);
+                        string path = System.IO.Path.Combine(
+                                               Server.MapPath("~/images"), pic);
+                        // file is uploaded
+                        file.SaveAs(path);
+
+                        emailsender.Attachment = pic;
+
+                        // save the image path path to the database or you can send image 
+                        // directly to database
+                        // in-case if you want to store byte[] ie. for DB
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            file.InputStream.CopyTo(ms);
+                            byte[] array = ms.GetBuffer();
+                        }
                     }
+                    emailsender.ReceiverId = word;
+                    emailsender.SenderId = User.Identity.GetUserName();
+                    emailsender.SenderIds = User.Identity.GetUserId();
+                    emailsender.SendingDate = DateTime.Now.ToString();
+                 
+                    db.EmailSenders.Add(emailsender);
+
+                    await db.SaveChangesAsync();
+               
+
+
+
                 }
-                
-                   //if (Attachment != null)
-                   // {
-                   //     emailsender.IsAttachment = true;
-                   //     var fileName = Path.GetFileName(Attachment.FileName);
-                   //     var path = Path.Combine(Server.MapPath("~/images/"), fileName);
-                   //     Attachment.SaveAs(path);
 
-                   //     emailsender.Attachment = Url.Content("~/images/" + fileName);
-
-                   // }
-
-                emailsender.SenderId = User.Identity.GetUserName();
-                emailsender.SenderIds = User.Identity.GetUserId();
-                emailsender.SendingDate = DateTime.Now.ToString();
-                emailsender.ReceiverId = emailsender.ReceiverIDs;
-                db.EmailSenders.Add(emailsender);
-
-                await db.SaveChangesAsync();
                 this.AddNotification("Send successfully.", NotificationType.SUCCESS);
-                return RedirectToAction("Index","EmailSenders");
+                return RedirectToAction("Index", "EmailSenders");
+                 
             }
 
             return View(emailsender);

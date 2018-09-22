@@ -185,11 +185,7 @@ namespace AngularJSAuthentication.API.Controllers
                 SqlDataReader rdr = cmd.ExecuteReader();
                 using (rdr)
                 {
-
-
                     allProducts = Read(rdr).ToList();
-
-
                 }
 
             }

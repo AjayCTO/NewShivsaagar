@@ -1,8 +1,8 @@
-﻿<section class="hero hero-page gray-bg padding-small">
+﻿<section  class="hero hero-page gray-bg padding-small">
     <div class="container">
         <div class="row d-flex">
             <div class="col-lg-9 order-2 order-lg-1">
-                <h1>{{product.product.product.productName}}</h1>
+                <h3>{{product.product.product.productName}}</h3>
             </div>
             <div class="col-lg-3 text-right order-1 order-lg-2">
                 <ul class="breadcrumb justify-content-lg-end">
@@ -14,7 +14,7 @@
         </div>
     </div>
 </section>
-<section class="product-details">
+<section id="productdetailscroll" class="product-details">
     <div class="container">
         <div class="row">
             <div class="product-images col-lg-6">
@@ -33,7 +33,7 @@
                     <button ng-show="obj.imagePath != null" class="owl-thumb-item" ng-repeat="obj in Images"><img src="{{GetProductImage(obj.imagePath)}}" alt="shirt"></button>
 
                     <!--<button class="owl-thumb-item"><img src="https://d19m59y37dris4.cloudfront.net/hub/1-4-0/img/shirt-green-small.png" alt="shirt"></button>
-         <button class="owl-thumb-item"><img src="https://d19m59y37dris4.cloudfront.net/hub/1-4-0/img/shirt-red-small.png" alt="shirt"></button>-->
+                    <button class="owl-thumb-item"><img src="https://d19m59y37dris4.cloudfront.net/hub/1-4-0/img/shirt-red-small.png" alt="shirt"></button>-->
                 </div>
             </div>
             <div class="details col-lg-6">
@@ -76,8 +76,8 @@
 
                 </div>
                 <ul class="CTAs list-inline">
-                    <li class="list-inline-item"><a class="btn btn-template wide"> <i class="icon-cart"></i>Add to Cart</a></li>
-                    <li class="list-inline-item"><a class="btn btn-template-outlined wide {{checkisinwishlist(x[8])}}" ng-click="addTowishList(product.product.product.id,'188cd426-f277-4160-b006-13084388d583')"> <i class="fa fa-heart-o"></i>Add to wishlist</a></li>
+                    <li class="list-inline-item"><a ng-click="AddToCartGlobal(product.product.product.id,product.product.product,'products-slider-')" class="btn btn-template wide"> <i class="icon-cart"></i>Add to Cart</a></li>
+                    <li class="list-inline-item"><a class="btn btn-template-outlined wide {{checkisinwishlist(x[8])}}" ng-click="addTowishList(product.product.product.id)"> <i class="fa fa-heart-o"></i>Add to wishlist</a></li>
                 </ul>
             </div>
         </div>
@@ -244,8 +244,8 @@
                         </div>
 
                         <ul class="CTAs list-inline">
-                            <li class="list-inline-item"><a class="btn btn-template wide"> <i class="fa fa-shopping-cart"></i>Add to Cart</a></li>
-                            <li class="list-inline-item"><a class="visit-product active btn btn-template-outlined wide" ng-click="addTowishList(product.product.product.id,'188cd426-f277-4160-b006-13084388d583')"><i class="icon-heart"></i>Add to wishlist</a></li>
+                            <li class="list-inline-item"><a ng-click="AddToCartGlobal(x.productID,x,'products-slider-')"  class="btn btn-template wide"> <i class="fa fa-shopping-cart"></i>Add to Cart</a></li>
+                            <li class="list-inline-item"><a class="visit-product active btn btn-template-outlined wide" ng-click="addTowishList(product.product.product.id)"><i class="icon-heart"></i>Add to wishlist</a></li>
                         </ul>
                     </div>
                 </div>
@@ -266,3 +266,9 @@
         height:600px
     }
 </style>
+
+<script>
+    $('html, body').animate({
+        scrollTop: $("#productdetailscroll").offset().top
+    }, 2000);
+</script>

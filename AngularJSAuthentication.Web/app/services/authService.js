@@ -3,7 +3,7 @@ app.factory('authService', ['$http', '$q', 'localStorageService', 'ngAuthSetting
 
     var serviceBase = ngAuthSettings.apiServiceBaseUri;
     var authServiceFactory = {};
-
+    var wishlist = [];
     var _authentication = {
         isAuth: false,
         userName: "",
@@ -21,7 +21,6 @@ app.factory('authService', ['$http', '$q', 'localStorageService', 'ngAuthSetting
         _logOut();
         debugger;
         return $http.post(serviceBase + 'api/Account/Register', registration).then(function (response) {
-
             return response;
         });
 
@@ -56,9 +55,7 @@ app.factory('authService', ['$http', '$q', 'localStorageService', 'ngAuthSetting
             _logOut();
             deferred.reject(err);
         });
-
         return deferred.promise;
-
     };
 
     var _logOut = function () {
@@ -157,7 +154,64 @@ app.factory('authService', ['$http', '$q', 'localStorageService', 'ngAuthSetting
 
     };
 
+
+    var _GetWishList = function () {
+        debugger;
+        var deferred = $q.defer();
+        var authData = localStorageService.get('authorizationData');
+        if (authData != null) {
+            $.ajax({
+                url: serviceBase + 'api/CustomerWishlist/GetWishLists',
+                data: { UserName: authData.userName },
+                type: 'GET',
+                dataType: 'json',
+                success: function (data, textStatus, xhr) {
+                    debugger;
+                    wishlist = data;
+                    deferred.resolve(wishlist);
+                    return wishlist;
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    debugger;                   
+                    deferred.reject(err);
+                }
+            });
+        }
+        return deferred.promise;
+    }
+
+
+
+    var _RemoveFromwishList = function (ID) {
+        debugger;
+        var deferred = $q.defer();
+        $.ajax({
+            url: serviceBase + 'api/WishlistDelete/DeleteWishList?id=' + ID,
+            type: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                debugger;
+                if (data.success == true) {
+                    toastr.success("Success! Wishlist Updated")                   
+                    deferred.resolve(data);
+                }
+            },
+            error: function (data) {
+                alert("into error");
+                deferred.reject(err);
+            }
+        });
+        return deferred.promise;
+    };
+
+
+
     authServiceFactory.saveRegistration = _saveRegistration;
+
+    authServiceFactory.GetWishList = _GetWishList;
+    authServiceFactory.RemoveFromwishList = _RemoveFromwishList;
+
+
     authServiceFactory.login = _login;
     authServiceFactory.logOut = _logOut;
     authServiceFactory.fillAuthData = _fillAuthData;

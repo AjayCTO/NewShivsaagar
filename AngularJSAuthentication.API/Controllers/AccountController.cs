@@ -59,6 +59,17 @@ namespace AngularJSAuthentication.API.Controllers
             customer.Phone = userModel.Phone;
             db.Customers.Add(customer);
 
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
+
+          
             // IdentityResult result = await _repo.RegisterUser(userModel);
             var user = new ApplicationUser() { Email = userModel.Email, UserName = userModel.UserName, CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now };
             IdentityResult result = await _userManager.CreateAsync(user, userModel.Password);

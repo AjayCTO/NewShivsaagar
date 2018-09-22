@@ -119,7 +119,7 @@ app.controller('productController', ['$scope', '$rootScope', '$location', functi
     
         var _model = { displayLength: $scope.itemsPerPage, displayStart: $scope.startpage, searchText: $scope.search, filtertext: FilterText, Categories: $scope.categoriesobj, lowprice: $scope.Minval, highprice: $scope.Maxval, isFeatured: "0" };
         $.ajax({
-            url: serviceBase + 'api/Product/Post',
+            url: serviceBase +'api/Product/Post',
             type: 'POST',
             dataType: 'json',
             data: _model,

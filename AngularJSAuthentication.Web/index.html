@@ -30,25 +30,31 @@
     <link rel="stylesheet" href="css/custom.css">
     <!-- Favicon-->
     <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="content/css/toastr.css" rel="stylesheet" />
     <!-- Modernizr-->
     <script src="js/modernizr.custom.79639.js"></script>
+
     <!-- Tweaks for older IEs-->
     <!--[if lt IE 9]>
     <script src="html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="respond/1.4.2/respond.min.js"></script><![endif]-->
 
     <style>
-        .col-lg-2 strong a:hover
-        {
-            color:#fff !important;
-            cursor:pointer !important;
+        .col-lg-2 strong a:hover {
+            color: #fff !important;
+            cursor: pointer !important;
+        }
+    </style>
+    <style>
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x- ng-cloak {
+            display: none !important;
         }
     </style>
 </head>
-<body data-ng-app="AngularAuthApp">
+<body ng-cloak data-ng-app="AngularAuthApp" data-ng-controller="indexController">
 
 
-    <div data-ng-controller="indexController">
+    <div>
         <header class="header">
             <!-- Tob Bar-->
             <div class="top-bar">
@@ -175,12 +181,13 @@
                         </ul>
                         <div class="right-col d-flex align-items-lg-center flex-column flex-lg-row">
                             <!-- Search Button-->
-                            <!--<div class="cart" ng-controller="WishListController">
-                                <a href="#/WishList" data-ng-hide="!authentication.isAuth" data-placement="top" title="Wishlist">
+                            <div class="nav-item">
+                                <a href="#/WishList" data-ng-hide="!authentication.isAuth" class="dropdown-toggle" data-placement="top" title="Wishlist">
                                     <i class="icon-heart"></i>
-                                    <sup>{{CurrentWishList.length}}</sup>
+                                    <div class="cart-no">{{CurrentWishList.length}}</div>
+
                                 </a>
-                            </div>-->
+                            </div>
                             <div class="search"><i class="icon-search"></i></div>
                             <!-- User Not Logged - link to login page-->
                             <div class="user"> <a id="userdetails" href="#/login" class="user-link"><i class="icon-profile"></i></a></div>
@@ -218,7 +225,7 @@
 
                                             </div>
                                             <div class="details d-flex justify-content-between">
-                                                <div class="text"> <a><strong>{{item.productName}}</strong></a><small>Quantity: {{item.Quantity}} </small><span class="price">${{item.Cost}} </span></div><a ng-click="DeleteFromCart(item)" class="delete"><i class="fa fa-trash-o"></i></a>
+                                                <div class="text"> <a><strong>{{item.productName}}</strong></a><small>Quantity: {{item.Quantity}} </small><span class="price">${{item.productPrice}} </span></div><a ng-click="DeleteFromCart(item)" class="delete"><i class="fa fa-trash-o"></i></a>
                                             </div>
                                         </div>
                                     </div>
@@ -269,7 +276,7 @@
                         <div class="item d-flex align-items-center">
                             <div class="icon"><i class="icon-headphones"></i></div>
                             <div class="text">
-                                <h6 class="no-margin text-uppercase">020-800-456-747</h6><span>24/7 Available Support</span>
+                                <h6 class="no-margin text-uppercase"> +91.295.323.2033</h6><span>24/7 Available Support</span>
                             </div>
                         </div>
                     </div>
@@ -280,9 +287,10 @@
         <div class="main-block">
             <div class="container">
                 <div class="row">
+
                     <div class=" col-lg-4">
-                      
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
+                        <h2>Shivsagar Online</h2>
+                        <p>You don't have to wait for the weekends to shop as you can shop online on your way back home after work.</p>
                         <ul class="social-menu list-inline">
                             <li class="list-inline-item"><a href="index.html#" target="_blank" title="twitter"><i class="fa fa-twitter"></i></a></li>
                             <li class="list-inline-item"><a href="index.html#" target="_blank" title="facebook"><i class="fa fa-facebook"></i></a></li>
@@ -293,12 +301,9 @@
                     </div>
                     <div class="site-links col-lg-2 col-md-6">
                         <h5 class="text-uppercase">Shop</h5>
-                        <ul class="list-unstyled">
-                            <li> <a href="index.html#">For Women</a></li>
-                            <li> <a href="index.html#">For Men</a></li>
-                            <li> <a href="index.html#">Stores</a></li>
-                            <li> <a href="index.html#">Our Blog</a></li>
-                            <li> <a href="index.html#">Shop</a></li>
+                        <ul class="list-unstyled" ng-repeat="cat in searchcategories|limitTo:5" ng-if="cat.categories1.length==0">
+                            <li> <a href="" ng-click="GoToProductsWithCategoryID(cat.id)">{{cat.categoryName}}</a></li>
+
                         </ul>
                     </div>
                     <div class="site-links col-lg-2 col-md-6">
@@ -308,11 +313,12 @@
                             <li> <a href="#/signup">Register</a></li>
                             <li> <a href="#/Product">Our Products</a></li>
                             <li> <a href="#/checkout">checkout</a></li>
+                            <li> <a href="#/Contact">Contact Us</a></li>
                         </ul>
                     </div>
                     <div class="newsletter col-lg-4">
                         <h5 class="text-uppercase">Daily Offers & Discounts</h5>
-                        <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. At itaque temporibus.</p>
+                        <p>Shivsagar Online provide latest products offers and discounts on product to you.</p>
                         <form action="index.html#" id="newsletter-form">
                             <div class="form-group">
                                 <input type="email" name="subscribermail" placeholder="Your Email Address">
@@ -327,21 +333,20 @@
             <div class="container">
                 <div class="row d-flex align-items-center">
                     <div class="text col-md-6">
-                        <p>&COPY; @DateTime.Now.Year. Made with<a href="https://shivamface.shivamitconsultancy.com" target="_blank">Shivamitconsultancy</a> All rights reserved.</p>
+                        <p>&COPY;<a href="www.shivamitconsultancy.com" target="_blank">Shivamitconsultancy</a> All rights reserved.</p>
                     </div>
                     <div class="payment col-md-6 clearfix">
                         <ul class="payment-list list-inline-item pull-right">
-                            <li class="list-inline-item"><img src="img/visa.svg" alt="..."></li>
-                            <li class="list-inline-item"><img src="img/mastercard.svg" alt="..."></li>
+                            <li class="list-inline-item"><img style="width:400px;height:70px" src="img/paypal.png" alt="..."></li>
+                            <!--<li class="list-inline-item"><img src="img/mastercard.svg" alt="..."></li>
                             <li class="list-inline-item"><img src="img/paypal.svg" alt="..."></li>
-                            <li class="list-inline-item"><img src="img/western-union.svg" alt="..."></li>
+                            <li class="list-inline-item"><img src="img/western-union.svg" alt="..."></li>-->
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
-
 
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/popper.js/umd/popper.min.js"> </script>
@@ -375,7 +380,8 @@
     <script src="scripts/angular-local-storage.min.js"></script>
     <script src="scripts/loading-bar.min.js"></script>
     <script src="scripts/jquery.animate_from_to-1.0.js"></script>
-
+    <script src="scripts/toastr.js"></script>
+    <script src="scripts/bootbox.min.js"></script>
     <!-- Load app main script -->
     <script src="app/app.js?v=2"></script>
 
@@ -396,10 +402,15 @@
     <script src="app/controllers/shoppingCartController.js"></script>
     <script src="app/controllers/checkOutController.js"></script>
     <script src="app/controllers/ProductDetailController.js"></script>
-
+    <script src="app/controllers/WishListController1.js"></script>
     <script src="app/controllers/contactController.js"></script>
     <!-- Load custom filters -->
     <!-- Load custom directives -->
-
+    <script>
+        $(".wide").click(function () {
+            $("#cartdetails").click();
+        })
+    </script> wide
 </body>
 </html>
+

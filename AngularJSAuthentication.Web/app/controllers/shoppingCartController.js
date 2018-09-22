@@ -9,7 +9,6 @@ app.controller('shoppingCartController', ['$scope','localStorageService', '$root
 
         if (_localCartItems != null && _localCartItems != undefined) {
             _localCartItems = JSON.parse(_localCartItems);
-
         }
         else {
             _localCartItems = [];
@@ -19,7 +18,14 @@ app.controller('shoppingCartController', ['$scope','localStorageService', '$root
         CheckScopeBeforeApply();
     }
 
-    
+    $scope.RemoveCartGlobal = function (item) {
+        debugger;
+        $rootScope.$emit("DeleteFromCart", item);
+        setTimeout(function () { $scope.GetCart(); }, 2000);        
+    }
+
+
+
     $scope.GetProductImageGlobal = function (Path) {
         if ($.trim(Path) != "") {
             return _GlobalImagePath + "/ProductImages/" + Path;
@@ -29,28 +35,38 @@ app.controller('shoppingCartController', ['$scope','localStorageService', '$root
     //Get Product 
    
 
-    $scope.RemoveCartGlobal = function (item) {
+    //$scope.RemoveCartGlobal = function (item) {
 
-        debugger;
-        //$rootScope.$emit("DeleteFromCart", product);
-        //LocalCartFiller();
-        //$scope.CalculateCartGlobal($scope.shoppingCart);
+    //    debugger;
+    //    //$rootScope.$emit("DeleteFromCart", product);
+    //    //LocalCartFiller();
+    //    //$scope.CalculateCartGlobal($scope.shoppingCart);
+    //    bootbox.confirm("Are you sure you want to delete this item from cart ?", function (result) {
+    //        if (result) {
 
-        var authData = localStorageService.get('authorizationData');
-       
-        $.ajax({
-            url: serviceBase + 'api/Cart/DeleteFromCart?UserName=' + authData.userName + '&id=' + item.id,
-            type: 'DELETE',
-            dataType: 'json',
-            success: function (data, textStatus, xhr) {
-                $scope.GetCart();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                alert("into error");
-            }
-        });
+    //            var authData = localStorageService.get('authorizationData');
 
-    }
+    //            if (authData != null) {
+    //                $.ajax({
+    //                    url: serviceBase + 'api/Cart/DeleteFromCart?UserName=' + authData.userName + '&id=' + item.id,
+    //                    type: 'DELETE',
+    //                    dataType: 'json',
+    //                    success: function (data, textStatus, xhr) {
+    //                        toastr.success("Success! Cart Updated");
+    //                        $scope.CalculateCartGlobal();
+    //                        $scope.GetCart();
+                           
+
+    //                    },
+    //                    error: function (xhr, textStatus, errorThrown) {
+    //                        alert("into error");
+    //                    }
+    //                });
+    //            }
+    //        }
+    //    });
+
+    //}
 
     $scope.CalculateCartGlobal = function (cart) {
         $rootScope.$emit("CalculateCart", cart);
@@ -58,8 +74,9 @@ app.controller('shoppingCartController', ['$scope','localStorageService', '$root
 
     }
     $scope.UpdateQuantity = function (type, Index) {
+        debugger;
         var _Objcopy = angular.copy($scope.shoppingCart[Index]);
-
+        debugger;
         if (type == 1) {
             if (_Objcopy.Quantity == _Objcopy.ProductQuantity) {
                 alert("Product Reached to its maximum limit");
@@ -69,12 +86,14 @@ app.controller('shoppingCartController', ['$scope','localStorageService', '$root
             }
 
         }
+        debugger;
         if (type == 2) {
             if (_Objcopy.Quantity > 1) {
 
                 _Objcopy.Quantity = _Objcopy.Quantity - 1;
             }
         }
+        debugger;
         $scope.shoppingCart[Index] = _Objcopy;
         CheckScopeBeforeApply();
         localStorage.setItem("shoppingCart", JSON.stringify($scope.shoppingCart));

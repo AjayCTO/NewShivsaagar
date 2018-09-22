@@ -42,13 +42,13 @@
                 <div class="container-fluid">
 
                     <a href="/EmailSenders/Create" class="btn btn-success"><i class="fa fa-envelope" aria-hidden="true"></i> New Message</a>
+                    <a href="" id="deleteAcc" class="btn btn-danger pull-right disabled">Delete All</a>
                 </div>
 
                 <div class="card-body">
                     <table id="myTable" class="table table-striped table-bordered dt-responsive">
                         <thead>
                             <tr>
-                               
                                 <th><label class="custom-control custom-checkbox custom-control-inline"><input type="checkbox" id="checkAll" class="custom-control-input" name="checkAll" value=""><span class="custom-control-label">Select</span></label></th>
                                 <th class="clickable">Sender Name</th>
                                 <th>Subject</th>
@@ -92,6 +92,7 @@
             "serverSide": true, // for process server side
             "filter": true, // this is for disable filter (search box)
             "orderMulti": false, // for disable multiple column at once
+            "order": [[ 5, 'desc' ]], 
             "ajax": {
                 "url": "/EmailSenders/LoadData",
                 "type": "POST",
@@ -110,7 +111,7 @@
                             },
 
                     {
-
+                        
 
                         "data": "SenderId", "name": "SenderId", "autoWidth": true
                     },
@@ -137,7 +138,7 @@
                      },
 
                     {
-
+                       
                         "data": "SendingDate", "name": "SendingDate", "autoWidth": true
                     },
                      {
@@ -146,7 +147,9 @@
                              debugger;
                              var _a = '<a href="/EmailSenders/UniqueDetailView?id=' + row.Id + '"  class="btn btn-info dataTables AcctQuickView" data-toggle="tooltip" data-placement="top" title="" data-original-title="Details" ><i class="fa fa-list"  align="center"></i></a>';
                              var _b = '<a onclick="DeleteEmail(' + row.Id + ')"  class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" ><i class="fa fa-trash"  align="center"></i></a>';
-                             return  _a  + '<a href="/EmailSenders/Reply/?id=' + row.Id + '" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-mail-reply" title="Reply" align="center"></i></a>' + _b;
+                             var _c = '<a href="/EmailSenders/Forward/?id=' + row.Id + '" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Forward" data-original-title="Forword"><i class="fa fa-share" title="Forward" align="center"></i></a>';
+
+                             return  _a  + '<a href="/EmailSenders/Reply/?id=' + row.Id + '" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Reply" data-original-title="Reply"><i class="fa fa-mail-reply" title="Reply" align="center"></i></a>' + _c + _b;
                          }
                      },
             ]
@@ -155,27 +158,29 @@
     });
 
 
-    $(document).on('click', '.dataTables', function () {
-        alert("in");
-        //Set the index based on the row that was clicked
-        debugger;
-        var CurItemIndex = myDataTable.row($(this).parents('tr')).index();
-        //Get the indexes 
-        var CurTableIndexs = myDataTable.rows().indexes();
-        // Get the array key for the current index we have
-        var CurIndexArrayKey = CurTableIndexs.indexOf(CurItemIndex);
-        // Subtract 1 to the array key to get the prior index number
-        var PrevItemIndex = CurTableIndexs[CurIndexArrayKey - 1];
-        // Add 1 to get the next index number
-        var NextItemIndex = CurTableIndexs[CurIndexArrayKey + 1];
-        //Create Previous Row object
-        var QVPrevItemObj = $(myDataTable.rows(PrevItemIndex).nodes()).find(".AcctQuickView").attr("href");
+    //$(document).on('click', '.dataTables', function () {
+    //    alert("in");
+    //    //Set the index based on the row that was clicked
+    //    debugger;
+    //    var CurItemIndex = myDataTable.row($(this).parents('tr')).index();
+    //    //Get the indexes 
+    //    var CurTableIndexs = myDataTable.rows().indexes();
+    //    // Get the array key for the current index we have
+    //    var CurIndexArrayKey = CurTableIndexs.indexOf(CurItemIndex);
+    //    // Subtract 1 to the array key to get the prior index number
+    //    var PrevItemIndex = CurTableIndexs[CurIndexArrayKey - 1];
+    //    // Add 1 to get the next index number
+    //    var NextItemIndex = CurTableIndexs[CurIndexArrayKey + 1];
+    //    //Create Previous Row object
+    //    var QVPrevItemObj = $(myDataTable.rows(PrevItemIndex).nodes()).find(".AcctQuickView").attr("href");
     
-        //Create Next Row object
-        var QVNextItemObj = $(myDataTable.rows(NextItemIndex).nodes()).find(".AcctQuickView").attr("href");
+    //    //Create Next Row object
+    //    var QVNextItemObj = $(myDataTable.rows(NextItemIndex).nodes()).find(".AcctQuickView").attr("href");
        
-    });
+    //});
 
+
+ 
 
     function DeleteEmail(Id) {
 
@@ -215,9 +220,12 @@
         $('#checkAll').change(function () {
             debugger;
             if ($(this).is(':checked')) {
+             
                 $('.custom-control input:checkbox').prop('checked', true);
+                $("#deleteAcc").removeClass("disabled");
             } else {
                 $('.custom-control input:checkbox').prop('checked', false);
+                $("#deleteAcc").addClass("disabled");
 
             }
         });
@@ -259,11 +267,6 @@
 
     });
 </script>
-
-
-
-
-
 
 
 

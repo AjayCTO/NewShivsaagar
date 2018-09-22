@@ -10,9 +10,10 @@ using AngularJSAuthentication.Models;
 using System.Web;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
+using System.Security.Claims;
 namespace AngularJSAuthentication.API.Controllers
 {
-   [RoutePrefix("/api/WishLists/{actionName}")]
+   [Route("api/CustomerWishlist/{action}")]
  
  
     public class CustomerWishlistController : ApiController
@@ -21,12 +22,17 @@ namespace AngularJSAuthentication.API.Controllers
 
         [HttpGet]
         [ActionName("GetWishLists")]
-        public List<WishListViewModel> GetWishLists(string UserId)
+        public List<WishListViewModel> GetWishLists(string UserName)
         {
 
     
             try
             {
+               
+                var UserId = db.AspNetUsers.FirstOrDefault(x => x.UserName == UserName).Id;
+
+             
+
                 var _Customer = db.Customers.Where(x => x.UserID == UserId).FirstOrDefault();
                 var _wishlistData = db.WishLists.Where(x => x.CustomerId == _Customer.Id).ToList();
                 var _newlistwm = new List<WishListViewModel>();
@@ -63,13 +69,14 @@ namespace AngularJSAuthentication.API.Controllers
         [ActionName("PostWishList")]
         public HttpResponseMessage  PostWishList(WishList wishList)
         {
+            var UserId = db.AspNetUsers.FirstOrDefault(x => x.UserName == wishList.UserID).Id;
             try
             {
-                var _Customer = db.Customers.Where(x => x.UserID == wishList.UserID).FirstOrDefault();
+                var _Customer = db.Customers.Where(x => x.UserID == UserId).FirstOrDefault();
                 wishList.CustomerId = _Customer.Id;
                 db.WishLists.Add(wishList);
                 db.SaveChanges();
-              var result = new
+                var result = new
                 {
                     success = true,
                 };

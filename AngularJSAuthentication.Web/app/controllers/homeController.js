@@ -1,5 +1,5 @@
 ﻿'use strict';
-app.controller('homeController', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) {
+app.controller('homeController', ['$scope', '$rootScope','localStorageService', '$location', function ($scope, $rootScope,localStorageService, $location) {
     $scope.iconclass = "icon-heart"
     $scope.searchcategoriesslider = [];
     $scope.pagedItems = [];
@@ -11,10 +11,17 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
         $rootScope.$emit("GetCategories", {});
     }
 
-    $scope.AddToCartGlobal = function (productID,product,ID) {
+    $scope.AddToCartGlobal = function (productID, product, ID) {       
         $rootScope.$emit("AddToCart", productID, product, ID);
     }
 
+    $scope.addTowishList = function (productID) {       
+        $rootScope.$emit("addTowishList", productID);
+    }
+
+    $scope.GetWishList = function () {
+        $rootScope.$emit("GetWishList");
+    }
    
 
     //$rootScope.$on("AddToWishlists", function (productId, customerId)
@@ -31,8 +38,7 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
     else {
          $scope.childmethod();
         _localCategories = localStorage.getItem("Categories")
-        _localCategories = JSON.parse(_localCategories);
-       
+        _localCategories = JSON.parse(_localCategories);       
     }
 
 
@@ -106,7 +112,7 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
                 debugger;
                 $scope.Suppliers = data;
 
-
+                console.log("supplier");
                 console.log($scope.Suppliers);
 
                 $scope.$apply();
@@ -143,7 +149,7 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
     }
 
     $scope.GetFeaturedProducts = function (_Type) {
-
+        debugger;
         var _isFeatured = "";
         var _MostSale = "";
         var _topRated = "";
@@ -160,19 +166,20 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
                 break;
             case 3:
                 _topRated = "1";
-                _displaylength = 20;
+                _displaylength = 3000;
                 break;
             default:
 
         }
         var _model = { displayLength: _displaylength, displayStart: 0, searchText: "", filtertext: "", Categories: "", lowprice: "", highprice: "", isFeatured: _isFeatured, isMostSale: _MostSale, TopRated: _topRated };
         $.ajax({
+           
             url: serviceBase + 'api/Product/Post',
             type: 'POST',
             dataType: 'json',
             data: _model,
             success: function (data, textStatus, xhr) {
-
+                debugger;
                 $scope.total = data.iTotalDisplayRecords;
                 
 
@@ -189,7 +196,8 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
                     case 3:
                         $scope.TopRatedItems = data.aaData;
                         _ClassName = '.topRated-slider';
-
+                        console.log("toprated");
+                        console.log($scope.TopRatedItems);
                         break;
                     default:
 
@@ -219,37 +227,20 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
         CheckScopeBeforeApply();
         $("#exampleModal").modal("show");
     }
-    function init() {
 
-      
+
+    function init() {
+        
         $scope.GetFeaturedProducts(1);
         $scope.GetFeaturedProducts(2);
         $scope.GetFeaturedProducts(3);
         $scope.GetSuppliers();
-        $scope.GetWishList("188cd426-f277-4160-b006-13084388d583 ");
+        $scope.GetWishList();
     }
 
     //add to wishlist
 
-    $scope.GetWishList = function (customerId) {
-  
-        $.ajax({
-            url: serviceBase + 'api/CustomerWishlist/GetWishLists?UserID=' + customerId,
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                debugger;
-                $scope.CurrentWishList = data;
-                console.log($scope.CurrentWishList);
-                $scope.$apply();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-              
-            }
-        });
-
-    }
-
+   
     $scope.RemoveFromwishList = function (ID) {
         debugger
         $.ajax({
@@ -259,8 +250,8 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
             success: function (data) {
                 debugger;
                 if (data.success == true) {
-                    alert("remove Product in Your Wishlist");
-                    $scope.GetWishList("188cd426-f277-4160-b006-13084388d583 ");
+                    toastr.success("Success! Remove Product in  Wishlist");
+                    $scope.GetWishList();
                     $scope.$apply();
                 }
             },
@@ -284,66 +275,81 @@ app.controller('homeController', ['$scope', '$rootScope', '$location', function 
     }
 
 
-    $scope.addTowishList = function (productId, customerId) {
-        debugger;
-     
-        var cid = customerId;
+    //$scope.addTowishList = function (productId) {
+    //    debugger;     
+    //    var authData = localStorageService.get('authorizationData');        
+    //    if (authData != null) {
+    //        var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: authData.userName };
+    //        $.ajax({
+    //            url: serviceBase + 'api/CustomerWishlist/PostWishList',
+    //            type: 'POST',
+    //            data: wishListmodel,
+    //            dataType: 'json',
+    //            success: function (data) {
+    //                debugger;
+    //                console.log(data);
+    //                if (data.success == true) {
+    //                    $scope.iconclass = "angel icon-heart";
+    //                    $scope.GetWishList();
+    //                    $scope.$apply();
+    //                }
+    //            },
+    //            error: function (xhr, textStatus, errorThrown) {
+    //            }
+    //        });
+    //    }
+    //    //var cid = customerId;
 
-        if (cid == null || cid === " " || cid == '') {
-            localStorage.setItem("WishListProductID", productId);
+    //    //if (cid == null || cid === " " || cid == '') {
+    //    //    localStorage.setItem("WishListProductID", productId);
 
-            window.location.href = '/account/login';
+    //    //    window.location.href = '/account/login';
 
-        }
-        else {
+    //    //}
+    //    //else {
 
-            if ($scope.CheckisInWishList(productId) == "active") {
-                for (var i = 0; i < $scope.CurrentWishList.length; i++) {
-                    if ($scope.CurrentWishList[i].productId == productId) {
+    //    //    if ($scope.CheckisInWishList(productId) == "active") {
+    //    //        for (var i = 0; i < $scope.CurrentWishList.length; i++) {
+    //    //            if ($scope.CurrentWishList[i].productId == productId) {
                      
-                        $scope.RemoveFromwishList($scope.CurrentWishList[i].id);
-                        break;
+    //    //                $scope.RemoveFromwishList($scope.CurrentWishList[i].id);
+    //    //                break;
                          
-                    }
+    //    //            }
 
-                }
+    //    //        }
 
-            }
-            else {
+    //    //    }
+    //    //    else {
 
 
-                var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: customerId };
-                $.ajax({
-                    url: serviceBase + 'api/CustomerWishlist/PostWishList',
-                    type: 'POST',
-                    data: wishListmodel,
-                    dataType: 'json',
-                    success: function (data) {
-                        debugger;
-                        console.log(data);
-                        if (data.success == true) {
-                            alert("Add Product in Your Wishlist");
+    //    //        var wishListmodel = { ProductId: productId, CustomerId: -1, UserID: customerId };
+    //    //        $.ajax({
+    //    //            url: serviceBase + 'api/CustomerWishlist/PostWishList',
+    //    //            type: 'POST',
+    //    //            data: wishListmodel,
+    //    //            dataType: 'json',
+    //    //            success: function (data) {
+    //    //                debugger;
+    //    //                console.log(data);
+    //    //                if (data.success == true) {
+    //    //                    alert("Add Product in Your Wishlist");
                      
-                            $scope.iconclass = "angel icon-heart";
-                            $scope.GetWishList("188cd426-f277-4160-b006-13084388d583 ");
-                            $scope.$apply();
-                        }
+    //    //                    $scope.iconclass = "angel icon-heart";
+    //    //                    $scope.GetWishList("188cd426-f277-4160-b006-13084388d583 ");
+    //    //                    $scope.$apply();
+    //    //                }
                        
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
+    //    //            },
+    //    //            error: function (xhr, textStatus, errorThrown) {
                       
-                    }
-                });
-            }
-        }
-    };
+    //    //            }
+    //    //        });
+    //    //    }
+    //    //}
+    //};
 
 
-
-
-
-
-
-
+   
     init();
 }]);

@@ -28,10 +28,12 @@
                 @using (Html.BeginForm("Create", "EmailSenders", FormMethod.Post, new { enctype = "multipart/form-data" }))
                 {
                            @Html.HiddenFor(model => model.ReceiverIDs, new { @class = "form-control" })
+                         @Html.HiddenFor(model=>model.Attachment)
+                    @Html.HiddenFor(model=>model.IsAttachment)
                   <input type="hidden" name="ReceiverIDs" id="ReceiverIDs" />
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true)
-
+               
                     @Html.HiddenFor(model => model.Id)
 
     <!-- start: Content -->
@@ -86,18 +88,15 @@
                                             <span class="testlabel"> </span>
                                         </div>
 
-
+                                        
                                     </div>*@
-                                    <ul class="mailbox-attachments clearfix">
-                                        <li>
-                                            <span class="mailbox-attachment-icon has-img"><img src="/images/@Model.Attachment" alt="Attachment"></span>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="attach">
 
-                                            <div class="mailbox-attachment-info">
-                                                <a href="/EmailSenders/Download?name=@Model.Attachment" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @Model.Attachment</a>
-                                         
                                             </div>
-                                        </li>
-                                    </ul>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
 
                                         <label class="control-label">*Message:</label>
@@ -246,5 +245,144 @@
         })();
 
     </script>
+<script>
+    var current = location.pathname;
+    $('.nav li a').each(function () {
+
+        var $this = $(this);
+        // if the current path is like this link, make it active
+        if ($this.attr('href').indexOf(current) !== -1) {
+            if (current != "/") {
+                $this.addClass('active');
+
+            }
+        }
+    })
+    var imagesPreview = function (input, placeToInsertImagePreview) {
+        debugger;
+
+        var extension = input.files[0].name.replace(/^.*\./, '');
+
+        if (input.files) {
+            var filesAmount = input.files.length;
+
+            for (i = 0; i < filesAmount; i++) {
+                var reader = new FileReader();
+
+                reader.onload = function (event) {
+                    var _multiple = $.trim($(input).attr("multiple"));
+                    if (_multiple == "") { $(placeToInsertImagePreview).html(""); }
+
+
+                    if (extension == input.files[0].name) {
+                        extension = '';
+                    } else {
+
+                        extension = extension.toLowerCase();
+                    }
+                    switch (extension) {
+
+                        case 'jpg':
+                        case 'jpeg':
+                        case 'png':
+                        case 'bmp':
+                            {
+
+                                $($.parseHTML('<img style="height:50px; width:50px; margin-right:10px; margin-top:5px;">')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
+
+                                break;
+                            }
+
+                        case 'txt':
+                            $($.parseHTML("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa fa-file-text'></i></span><div class='mailbox-attachment-info'>" + input.files[0].name + "</div></li></ul>")).appendTo(placeToInsertImagePreview);
+
+                            break;
+                        case 'pdf':
+                            $($.parseHTML("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa-file-pdf-o'></i></span><div class='mailbox-attachment-info'>" + input.files[0].name + "</div></li></ul>")).appendTo(placeToInsertImagePreview);
+
+                            break;
+                        case 'docx':
+                            $($.parseHTML("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa-file-word-o'></i></span><div class='mailbox-attachment-info'>" + input.files[0].name + "</div></li></ul>")).appendTo(placeToInsertImagePreview);
+                            break;
+                        case 'xlsx':
+                            $($.parseHTML("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa-file-excel-o'></i></span><div class='mailbox-attachment-info'>" + input.files[0].name + "</div></li></ul>")).appendTo(placeToInsertImagePreview);
+                            break;
+
+
+                    }
+                }
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+
+
+
+    };
+    $('.custom-file-input').on('change', function () {
+        imagesPreview(this, 'div.gallery');
+    });
+
+    $(document).on("keypress", ".customColumnData", function (evt) {
+
+        var keycode = evt.charCode || evt.keyCode;
+        if (keycode == 35 || keycode == 64) { //Enter key's keycode
+            return false;
+        }
+    });
+</script>
+<script>
+
+        $(document).ready(function () {
+
+
+            debugger;
+                var filename = '@Model.Attachment';
+
+                var extension = filename.replace(/^.*\./, '');
+
+
+                if (extension == filename) {
+                    extension = '';
+                } else {
+
+                    extension = extension.toLowerCase();
+                }
+
+                switch (extension) {
+                    case 'jpeg':
+                    case 'jpg':
+                    case 'png':
+                    case "bmp":
+                        {
+                    $(".attach").html("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon has-img'><img  src='/images/@Model.Attachment' alt='Attachment'></span><div class='mailbox-attachment-info'><i class='fa fa-camera'></i> @Model.Attachment</a></div></li></ul>");
+
+                            break;
+                        }
+
+                    case 'txt':
+                        $(".attach").html("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa fa-file-text'></i></span><div class='mailbox-attachment-info'><i class='fa fa-paperclip'></i>  @Model.Attachment</a></div></li></ul>");
+
+                        break;
+                    case 'pdf':
+
+                        $(".attach").html("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa-file-pdf-o'></i></span> <div class='mailbox-attachment-info'><i class='fa fa-paperclip'></i>  @Model.Attachment</a></span></div></li></ul>");
+
+                        break;
+                    case 'docx':
+                        $(".attach").html("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa-file-word-o'></i></span><div class='mailbox-attachment-info'><i class='fa fa-paperclip'></i>  @Model.Attachment</div></li></ul>");
+
+                        break;
+                    case 'xlsx':
+                        $(".attach").html("<ul class='mailbox-attachments clearfix'><li><span class='mailbox-attachment-icon'><i class='fa fa-file-excel-o'></i></span><div class='mailbox-attachment-info'><i class='fa fa-paperclip'></i>  @Model.Attachment</div></li></ul>");
+
+                        break;
+                    default:
+                        break;
+                }
+
+            });
+
+</script>
+
 }
 

@@ -78,6 +78,9 @@
         <AssociationConnector Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Products_dbo_Suppliers_SupplierID" ManuallyRouted="false" />
         <AssociationConnector Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Products_dbo_UnitOfMeasures_UnitOfMeasuresId" ManuallyRouted="false" />
         <AssociationConnector Association="SHIVAMEcommerceDBNew18Model.FK_dbo_WishLists_dbo_Products_ProductId" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="SHIVAMEcommerceDBNew18Model.Cart" Width="1.5" PointX="18.75" PointY="26.25" />
+        <AssociationConnector Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Customers_CustomerId" />
+        <AssociationConnector Association="SHIVAMEcommerceDBNew18Model.FK_dbo_Carts_dbo_Products_ProductId" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

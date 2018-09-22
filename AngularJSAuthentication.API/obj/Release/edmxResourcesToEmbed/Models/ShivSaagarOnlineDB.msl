@@ -588,6 +588,7 @@
     <EntitySetMapping Name="ProductValues_view">
       <EntityTypeMapping TypeName="SHIVAMEcommerceDBNew18Model.ProductValues_view">
         <MappingFragment StoreEntitySet="ProductValues_view">
+          <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="AttributeValue" ColumnName="AttributeValue" />
           <ScalarProperty Name="IsFeatured" ColumnName="IsFeatured" />
           <ScalarProperty Name="Quantity" ColumnName="Quantity" />
@@ -618,5 +619,15 @@
     <FunctionImportMapping FunctionImportName="InsertProductAttributes" FunctionName="SHIVAMEcommerceDBNew18Model.Store.InsertProductAttributes" />
     <FunctionImportMapping FunctionImportName="SP_GetAllSortedProducts" FunctionName="SHIVAMEcommerceDBNew18Model.Store.SP_GetAllSortedProducts" />
     <FunctionImportMapping FunctionImportName="SP_GetAllSortedProductsFrontFace" FunctionName="SHIVAMEcommerceDBNew18Model.Store.SP_GetAllSortedProductsFrontFace" />
+    <EntitySetMapping Name="Carts">
+      <EntityTypeMapping TypeName="SHIVAMEcommerceDBNew18Model.Cart">
+        <MappingFragment StoreEntitySet="Carts">
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+          <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

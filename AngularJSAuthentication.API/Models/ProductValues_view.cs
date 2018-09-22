@@ -28,5 +28,6 @@ namespace AngularJSAuthentication.API.Models
         public string ImageName { get; set; }
         public string ImagePath { get; set; }
         public Nullable<int> CateogryID { get; set; }
+        public string Description { get; set; }
     }
 }

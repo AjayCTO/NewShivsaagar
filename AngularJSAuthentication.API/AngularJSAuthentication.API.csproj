@@ -140,6 +140,7 @@
     <Compile Include="AuthContext.cs" />
     <Compile Include="AuthRepository.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\CustomerReviewsController.cs" />
@@ -176,6 +177,9 @@
       <DependentUpon>ShivSaagarOnlineDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BuildTree.cs" />
+    <Compile Include="Models\Cart.cs">
+      <DependentUpon>ShivSaagarOnlineDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Category.cs">
       <DependentUpon>ShivSaagarOnlineDB.tt</DependentUpon>
     </Compile>
@@ -329,6 +333,8 @@
       <DependentUpon>ShivSaagarOnlineDB.edmx</DependentUpon>
       <LastGenOutput>ShivSaagarOnlineDB.cs</LastGenOutput>
     </Content>
+    <None Include="Properties\PublishProfiles\22SeptPublish.pubxml" />
+    <None Include="Properties\PublishProfiles\NewPublish.pubxml" />
     <None Include="Properties\PublishProfiles\ngAuthenticationAPI.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
